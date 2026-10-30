@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flash CA53Y Comms Display</title>
+<meta name="theme-color" content="#0F2A30">
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+<style>
+:root{--lac:#0F2A30;--lac2:#17393F;--line:#2D545A;--gold:#CFA84E;--champ:#EAD9A8;--ivory:#F2EBD9;--mist:#A3B8B2;--rose:#E39098;
+--disp:Didot,"Bodoni 72","Bodoni MT","Playfair Display",Georgia,serif;--body:"Avenir Next",Avenir,"Segoe UI",Roboto,system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--lac);color:var(--ivory);font:17px/1.55 var(--body)}
+a{color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.plate{position:relative;overflow:hidden;text-align:center;padding:64px 20px 48px;border-bottom:1px solid var(--line)}
+.plate::before{content:"";position:absolute;left:50%;top:100%;width:1100px;height:1100px;transform:translate(-50%,-50%);
+background:repeating-conic-gradient(from 0deg,rgba(207,168,78,.22) 0 3deg,transparent 3deg 10deg);
+-webkit-mask:radial-gradient(closest-side,transparent 14%,#000 16%,#000 52%,transparent 100%);
+mask:radial-gradient(closest-side,transparent 14%,#000 16%,#000 52%,transparent 100%);pointer-events:none}
+.plate>*{position:relative}
+h1{margin:0;font:400 clamp(44px,11vw,84px)/1 var(--disp);color:var(--champ);letter-spacing:.01em}
+.badge{display:inline-block;margin-top:14px;padding:3px 18px;border:1px solid var(--gold);border-left-width:5px;border-right-width:5px;color:var(--gold);font:400 20px/1.3 var(--disp);letter-spacing:.18em;background:var(--lac)}
+.lede{max-width:40ch;margin:18px auto 0;color:var(--mist)}
+main{max-width:860px;margin:0 auto;padding:8px 20px 64px}
+h2{font:400 30px/1.2 var(--disp);color:var(--champ);margin:48px 0 10px}
+p{max-width:64ch}
+.boards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:20px}
+.board{border:1px solid var(--line);border-top:3px double var(--gold);padding:20px;background:var(--lac2)}
+.board h3{margin:0;font:400 24px/1.2 var(--disp);color:var(--champ)}
+.board p{color:var(--mist);font-size:15px;margin:8px 0 18px}
+esp-web-install-button button[slot=activate]{font:600 16px/1 var(--body);background:var(--gold);color:#1A2A2C;border:0;padding:13px 20px;border-radius:2px;cursor:pointer}
+.note{color:var(--mist);font-size:15px}
+.warn{border-left:4px solid var(--rose);padding:6px 14px;color:var(--ivory);background:rgba(227,144,152,.08)}
+ol{padding-left:22px;max-width:64ch}
+li{margin:6px 0}
+.shots{display:flex;gap:14px;overflow-x:auto;padding:6px 0 12px;margin-top:16px}
+.shots img{width:180px;height:240px;flex:none;border:1px solid var(--line);image-rendering:auto}
+footer{text-align:center;color:var(--mist);font-size:14px;padding:30px 20px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:no-preference){.plate::before{animation:turn 240s linear infinite}@keyframes turn{to{transform:translate(-50%,-50%) rotate(360deg)}}}
+</style>
+</head>
+<body>
+<header class="plate">
+  <h1>CA53Y Comms</h1>
+  <div class="badge">DISPLAY</div>
+  <p class="lede">Off-grid text messaging for the 2.8 inch ESP32 touch display. No internet, no phone, no Bluetooth. Flash it from this page.</p>
+</header>
+<main>
+  <h2>Flash your display</h2>
+  <p>Plug the board into this computer with a USB-C data cable, then pick your screen version. Use Chrome or Edge on a desktop or laptop; Safari and Firefox can't talk to USB serial devices.</p>
+  <div class="boards">
+    <div class="board">
+      <h3>E32R28T</h3>
+      <p>ILI9341 screen. Most boards sold as "2.8inch ESP32-32E Display", including 2024 stock. Try this one first.</p>
+      <esp-web-install-button manifest="manifest_ILI9341.json"><button slot="activate">Install for E32R28T</button>
+        <span slot="unsupported">This browser can't flash boards. Open this page in Chrome or Edge on a computer.</span>
+        <span slot="not-allowed">Flashing needs a secure page (https).</span></esp-web-install-button>
+    </div>
+    <div class="board">
+      <h3>E32R28T-1</h3>
+      <p>ST7789 screen, 2025 boards. Pick this if the other one leaves the screen blank or the colors look like a photo negative.</p>
+      <esp-web-install-button manifest="manifest_ST7789.json"><button slot="activate">Install for E32R28T-1</button>
+        <span slot="unsupported">This browser can't flash boards. Open this page in Chrome or Edge on a computer.</span>
+        <span slot="not-allowed">Flashing needs a secure page (https).</span></esp-web-install-button>
+    </div>
+  </div>
+  <p class="note">No port shows up? Try another cable (many are charge-only), or install the CH340 USB driver for your computer.</p>
+
+  <h2>After it boots</h2>
+  <ol>
+    <li>Tap each arrow tip with the stylus to set up the touch screen.</li>
+    <li>Type your name. It's shown to people you message.</li>
+    <li>Open Nearby to see other CA53Y devices, tap one to add it, or add a contact by its 7-character ID.</li>
+    <li>Set the same PIN on both devices to encrypt your messages. Without one, messages are open.</li>
+    <li>Use Channels for group chats. Public is open to everyone; add a passphrase to make a private one.</li>
+  </ol>
+  <p class="warn">Choosing "Erase device" during install wipes your name, contacts and channels. Leave it unchecked when you're only updating.</p>
+
+  <div class="shots" aria-label="Screens">
+    <img src="screens/splash.png" alt="Boot splash with the CA53Y sunburst">
+    <img src="screens/chats.png" alt="Chats list with unread counts">
+    <img src="screens/thread.png" alt="Conversation with delivery status">
+    <img src="screens/channel.png" alt="Private family channel">
+    <img src="screens/nearby.png" alt="Nearby devices with signal strength">
+    <img src="screens/keyboard.png" alt="On-screen keyboard">
+  </div>
+
+  <h2>Range</h2>
+  <p>Every CA53Y device repeats the messages it hears, so a message can hop through up to eight devices to reach someone out of direct range. A spare board on a windowsill or a hilltop makes a good repeater. Repeaters can't read encrypted messages.</p>
+</main>
+<footer>CA53Y IND. Source, protocol and build notes on GitHub.</footer>
+</body>
+</html>

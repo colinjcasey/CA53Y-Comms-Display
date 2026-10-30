@@ -1,0 +1,8 @@
+{
+  "name": "CA53Y Comms Display (ST7789)",
+  "version": "1.0.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    { "chipFamily": "ESP32", "parts": [ { "path": "firmware/CA53Y_Comms_Display_ST7789.bin", "offset": 0 } ] }
+  ]
+}

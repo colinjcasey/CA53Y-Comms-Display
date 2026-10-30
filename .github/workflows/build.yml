@@ -1,0 +1,42 @@
+name: Build firmware
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - panel: 0
+            name: ILI9341
+          - panel: 1
+            name: ST7789
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install ESP32 core and LovyanGFX
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32@3.3.12
+          arduino-cli lib install "LovyanGFX@1.2.33"
+      - name: Compile
+        run: |
+          arduino-cli compile -b esp32:esp32:esp32 CA53Y_Comms_Display \
+            --build-path build \
+            --build-property "compiler.cpp.extra_flags=-DCA53Y_PANEL=${{ matrix.panel }}"
+          cp build/CA53Y_Comms_Display.ino.merged.bin CA53Y_Comms_Display_${{ matrix.name }}.bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CA53Y_Comms_Display_${{ matrix.name }}
+          path: CA53Y_Comms_Display_${{ matrix.name }}.bin
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CA53Y_Comms_Display_${{ matrix.name }}.bin
