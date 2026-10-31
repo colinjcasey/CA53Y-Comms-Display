@@ -33,6 +33,20 @@ E32R28T). It comes in two versions that look identical:
 
 Flashed the wrong one? The screen stays blank or the colors look like a photo negative. Flash the other.
 
+## Standard or Long Range
+
+Every build comes in two networks:
+
+| Network        | `LONG_RANGE` | Radio                                                                 |
+|----------------|--------------|-----------------------------------------------------------------------|
+| **Standard**   | `0`          | Normal ESP-NOW                                                        |
+| **Long Range** | `1`          | Espressif's Long Range (LR) mode at 250 kbps. Each hop reaches farther |
+
+**Standard and Long Range devices can't hear each other.** Use the same setting as the messengers and relays
+in your group ([CA53Y Comms](https://github.com/colinjcasey/CA53Y-Comms) has both). Settings > About shows
+which network a display is on, and the serial monitor prints it at boot. Long Range installs from the web
+flasher keep your name, contacts and channels unless you tick Erase.
+
 ## Flash it
 
 ### Easiest: from the browser
@@ -55,7 +69,7 @@ board in with a USB-C *data* cable, and click the button for your version.
 arduino-cli core install esp32:esp32@3.3.12
 arduino-cli lib install "LovyanGFX@1.2.33"
 arduino-cli compile -b esp32:esp32:esp32 CA53Y_Comms_Display \
-  --build-property "compiler.cpp.extra_flags=-DCA53Y_PANEL=0"      # 1 for the ST7789 board
+  --build-property "compiler.cpp.extra_flags=-DCA53Y_PANEL=0 -DLONG_RANGE=0"   # PANEL 1 = ST7789 board, LONG_RANGE 1 = Long Range
 arduino-cli upload -b esp32:esp32:esp32 -p /dev/ttyUSB0 CA53Y_Comms_Display
 ```
 
@@ -63,6 +77,14 @@ arduino-cli upload -b esp32:esp32:esp32 -p /dev/ttyUSB0 CA53Y_Comms_Display
 
 ```sh
 esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash 0x0 docs/firmware/CA53Y_Comms_Display_ILI9341.bin
+```
+
+Long Range (keeps saved settings; use the `ST7789_LR` files for the 2025 board):
+
+```sh
+cd docs/firmware/lr
+esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash 0x1000 CA53Y_Comms_Display_ILI9341_LR.bootloader.bin \
+  0x8000 CA53Y_Comms_Display_ILI9341_LR.partitions.bin 0xe000 boot_app0.bin 0x10000 CA53Y_Comms_Display_ILI9341_LR.bin
 ```
 
 ## First boot
@@ -91,7 +113,7 @@ LED: **blue** blink while you have unread messages, **green** flash each time th
 
 ## Works with
 
-All CA53Y Comms devices use protocol v2 on Wi-Fi channel 1:
+All CA53Y Comms devices use protocol v2 on Wi-Fi channel 1, on the same network (Standard or Long Range):
 
 - **CA53Y Comms dev-module messengers** (phone portal at 192.168.4.1): direct messages work both ways,
   including PIN encryption. They don't have channels, but they repeat channel messages.

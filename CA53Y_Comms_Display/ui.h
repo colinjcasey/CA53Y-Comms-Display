@@ -420,7 +420,7 @@ static void drawHomeList() {
     row(y0 + ROW_H * 5, "Screen sleep", String("Tap the screen to wake it"), COL_IVORY, 0, false, SLEEP_LBL[sleepIdx]);
     row(y0 + ROW_H * 6, "Calibrate touch", String("If taps land in the wrong place"), COL_IVORY, 0, false, nullptr);
     snprintf(b, sizeof b, "%s  v%s", myId, FW_VERSION);
-    row(y0 + ROW_H * 7, "About", String(b), COL_IVORY, 0, false, nullptr);
+    row(y0 + ROW_H * 7, LONG_RANGE ? "About: Long Range network" : "About: Standard network", String(b), COL_IVORY, 0, false, nullptr);
     row(y0 + ROW_H * 8, "Erase everything", String("Name, contacts, channels, settings"), COL_ROSE, 0, false, nullptr);
   }
 }

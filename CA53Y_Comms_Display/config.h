@@ -3,7 +3,7 @@
 // CA53Y_PANEL (which screen your board has) and DISPLAY_ROTATION.
 #pragma once
 
-#define FW_VERSION "1.0.0"
+#define FW_VERSION "1.1.0"
 
 // ---------- which board ----------
 // The "2.8inch ESP32-32E" board comes in two versions that look the same:
@@ -30,6 +30,9 @@
 #define DISPLAY_ROTATION 0           // 0 = portrait, 2 = portrait upside down
 
 // ---------- radio (must match every CA53Y Comms device) ----------
+#ifndef LONG_RANGE
+#define LONG_RANGE      0            // 0 = Standard network, 1 = Long Range network.
+#endif                               // Standard and Long Range devices CAN'T hear each other.
 #define ESPNOW_CHANNEL  1            // Wi-Fi channel all CA53Y devices talk on
 #define MAX_HOPS        8            // how many repeaters a message may pass through
 #define SEND_TRIES      6            // direct-message retries before "not delivered"

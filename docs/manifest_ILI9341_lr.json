@@ -1,0 +1,13 @@
+{
+  "name": "CA53Y Comms Display (ILI9341, Long Range)",
+  "version": "1.1.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    { "chipFamily": "ESP32", "parts": [
+      { "path": "firmware/lr/CA53Y_Comms_Display_ILI9341_LR.bootloader.bin", "offset": 4096 },
+      { "path": "firmware/lr/CA53Y_Comms_Display_ILI9341_LR.partitions.bin", "offset": 32768 },
+      { "path": "firmware/lr/boot_app0.bin", "offset": 57344 },
+      { "path": "firmware/lr/CA53Y_Comms_Display_ILI9341_LR.bin", "offset": 65536 }
+    ] }
+  ]
+}

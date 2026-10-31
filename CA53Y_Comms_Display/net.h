@@ -638,6 +638,10 @@ void netSetup() {
   WiFi.disconnect();
   esp_wifi_set_ps(WIFI_PS_NONE);   // radio always listening, so we can repeat for others
   esp_wifi_set_channel(ESPNOW_CHANNEL, WIFI_SECOND_CHAN_NONE);
+#if LONG_RANGE
+  if (esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR) != ESP_OK) Serial.println("LR protocol setup failed");
+#endif
+  esp_wifi_set_max_tx_power(80);   // 20 dBm
   if (esp_now_init() != ESP_OK) { Serial.println("ESP-NOW init failed, restarting"); delay(2000); ESP.restart(); }
   esp_now_register_recv_cb(onRecv);
   esp_now_peer_info_t peer = {};
@@ -646,7 +650,14 @@ void netSetup() {
   peer.ifidx = WIFI_IF_STA;
   peer.encrypt = false;
   esp_now_add_peer(&peer);
-  Serial.printf("\nCA53Y Comms Display %s  %s  channel %d  max hops %d\n", FW_VERSION, myId, ESPNOW_CHANNEL, MAX_HOPS);
+#if LONG_RANGE
+  esp_now_rate_config_t rc = {};
+  rc.phymode = WIFI_PHY_MODE_LR;
+  rc.rate    = WIFI_PHY_RATE_LORA_250K;
+  if (esp_now_set_peer_rate_config(BCAST, &rc) != ESP_OK) Serial.println("LR rate setup failed");
+#endif
+  Serial.printf("\nCA53Y Comms Display %s  %s  channel %d  max hops %d  %s\n", FW_VERSION, myId, ESPNOW_CHANNEL, MAX_HOPS,
+                LONG_RANGE ? "LONG RANGE" : "standard");
 }
 
 void netLoop() {
