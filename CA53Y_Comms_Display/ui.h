@@ -234,7 +234,7 @@ static void drawSplash(const char *status) {
 enum : uint8_t { SCR_SPLASH, SCR_HOME, SCR_THREAD, SCR_KEYS, SCR_CONTACT, SCR_CHAN, SCR_CONFIRM };
 enum : uint8_t { TAB_CHATS, TAB_CHANS, TAB_NEAR, TAB_SET };
 enum : uint8_t { ED_MSG, ED_MYNAME, ED_C_ID, ED_C_NICK, ED_C_PIN, ED_CH_NAME, ED_CH_PASS };
-enum : uint8_t { CONF_ERASE, CONF_DEL_CONTACT, CONF_LEAVE_CHAN };
+enum : uint8_t { CONF_ERASE, CONF_DEL_CONTACT, CONF_LEAVE_CHAN, CONF_RESTART, CONF_POWER };
 
 #define HEAD_H  44
 #define TAB_Y   276
@@ -348,7 +348,7 @@ static int homeRows() {
   if (tab == TAB_CHATS) return 1 + nContacts;
   if (tab == TAB_CHANS) return 1 + nChans;
   if (tab == TAB_NEAR) { Nearby *nb[MAX_NEARBY]; return nearbyList(nb); }
-  return 9;
+  return 11;
 }
 
 static void row(int y, const char *title, const String &sub, uint32_t titleCol, int unread, bool lock, const char *right) {
@@ -421,7 +421,9 @@ static void drawHomeList() {
     row(y0 + ROW_H * 6, "Calibrate touch", String("If taps land in the wrong place"), COL_IVORY, 0, false, nullptr);
     snprintf(b, sizeof b, "%s  v%s", myId, FW_VERSION);
     row(y0 + ROW_H * 7, LONG_RANGE ? "About: Long Range network" : "About: Standard network", String(b), COL_IVORY, 0, false, nullptr);
-    row(y0 + ROW_H * 8, "Erase everything", String("Name, contacts, channels, settings"), COL_ROSE, 0, false, nullptr);
+    row(y0 + ROW_H * 8, "Restart", String("Messages clear, everything else is kept"), COL_IVORY, 0, false, nullptr);
+    row(y0 + ROW_H * 9, "Power off", String("Stops repeating. Press BOOT to turn on"), COL_IVORY, 0, false, nullptr);
+    row(y0 + ROW_H * 10, "Erase everything", String("Name, contacts, channels, settings"), COL_ROSE, 0, false, nullptr);
   }
 }
 
@@ -897,6 +899,8 @@ static void drawConfirm() {
   if (confirmAction == CONF_ERASE) { t = "Erase everything?"; b = "Your name, contacts, PINs, channels and settings are deleted. This device keeps its ID."; ok = "Erase"; }
   if (confirmAction == CONF_DEL_CONTACT) { t = "Delete contact?"; b = "Their PIN is deleted too. Messages from them will add them back as a new contact."; ok = "Delete"; }
   if (confirmAction == CONF_LEAVE_CHAN) { t = "Leave channel?"; b = "You stop receiving its messages. You can join again with the same name and passphrase."; ok = "Leave"; }
+  if (confirmAction == CONF_RESTART) { t = "Restart?"; b = "Messages on screen are cleared. Your name, contacts, PINs, channels and settings are kept."; ok = "Restart"; }
+  if (confirmAction == CONF_POWER) { t = "Power off?"; b = "This device stops sending and repeating messages. Press BOOT on the back to turn it on."; ok = "Power off"; }
   txt(t, 120, 98, F_TITLE, COL_CHAMP, D_MC);
   paragraph(b, 26, 120, 188, F_SMALL, COL_IVORY, 17);
   button(24, 204, 92, 30, "Cancel", false, COL_MIST);
@@ -914,10 +918,29 @@ static void confirmTap(int x, int y) {
       delay(200);
       ESP.restart();
     }
+    if (confirmAction == CONF_RESTART) {
+      lcd.fillScreen(COL_LAC);
+      delay(200);
+      restartNow();
+    }
+    if (confirmAction == CONF_POWER) {
+      lcd.fillScreen(COL_LAC);
+      lcd.setFont(F_TITLE);
+      lcd.setTextDatum(D_MC);
+      lcd.setTextColor(COL_CHAMP);
+      lcd.drawString("Powered off", 120, 145);
+      lcd.setFont(F_SMALL);
+      lcd.setTextColor(COL_MIST);
+      lcd.drawString("Press BOOT to turn on", 120, 178);
+      delay(1500);
+      lcd.setBrightness(0);
+      lcd.sleep();
+      powerOffNow();
+    }
     if (confirmAction == CONF_DEL_CONTACT) { deleteContact(confirmIdx); scr = SCR_HOME; tab = TAB_CHATS; showNote("Contact deleted", COL_VERD); return; }
     if (confirmAction == CONF_LEAVE_CHAN) { deleteChannel(confirmIdx); scr = SCR_HOME; tab = TAB_CHANS; showNote("Left the channel", COL_VERD); return; }
   } else if (x >= 24 && x < 116) {
-    scr = confirmAction == CONF_ERASE ? SCR_HOME : confirmAction == CONF_DEL_CONTACT ? SCR_CONTACT : SCR_CHAN;
+    scr = (confirmAction == CONF_ERASE || confirmAction == CONF_RESTART || confirmAction == CONF_POWER) ? SCR_HOME : confirmAction == CONF_DEL_CONTACT ? SCR_CONTACT : SCR_CHAN;
   }
   needDraw = true;
 }
@@ -1066,7 +1089,9 @@ static void homeTap(int x, int y) {
         showNote("Touch calibrated", COL_VERD);
         break;
       }
-      case 8: confirmAction = CONF_ERASE; scr = SCR_CONFIRM; break;
+      case 8: confirmAction = CONF_RESTART; scr = SCR_CONFIRM; break;
+      case 9: confirmAction = CONF_POWER; scr = SCR_CONFIRM; break;
+      case 10: confirmAction = CONF_ERASE; scr = SCR_CONFIRM; break;
     }
     needDraw = true;
   }

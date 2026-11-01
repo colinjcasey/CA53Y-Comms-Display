@@ -3,7 +3,7 @@
 // CA53Y_PANEL (which screen your board has) and DISPLAY_ROTATION.
 #pragma once
 
-#define FW_VERSION "1.1.0"
+#define FW_VERSION "1.2.0"
 
 // ---------- which board ----------
 // The "2.8inch ESP32-32E" board comes in two versions that look the same:
@@ -57,4 +57,4 @@
 #define PIN_LED_B       17
 #define PIN_SPEAKER     26           // speaker connector (DAC pin)
 #define PIN_AMP_EN      4            // audio amp enable, LOW = on
-#define PIN_BOOT        0            // hold 5 s to erase everything
+#define PIN_BOOT        0            // hold 5 s to erase everything; press to turn on after Power off

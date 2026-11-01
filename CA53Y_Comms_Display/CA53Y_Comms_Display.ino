@@ -6,6 +6,7 @@
   - Channels (group chats): open, or private with a passphrase.
   - Repeats every CA53Y message it hears for other people (mesh relay, up to 8 hops).
   - Nearby list of CA53Y devices in direct range, with signal strength.
+  - Settings > Power off / Restart. Press BOOT to turn it back on.
   - Talks to the CA53Y Comms dev-module messengers and relay boards (protocol v2, channel 1).
 
   Build: Arduino-ESP32 core 3.x, board "ESP32 Dev Module", library LovyanGFX.
@@ -15,6 +16,7 @@
 #include "config.h"
 #include "board.h"
 #include "net.h"
+#include "power.h"
 #include "ui.h"
 
 void finishSetup() {
@@ -27,6 +29,7 @@ void finishSetup() {
 }
 
 void setup() {
+  powerBegin();       // undo the pin holds from Power off
   Serial.begin(115200);
   pinMode(PIN_BOOT, INPUT_PULLUP);
   loadState();

@@ -1,6 +1,6 @@
 {
   "name": "CA53Y Comms Display (ILI9341)",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "new_install_prompt_erase": true,
   "builds": [
     { "chipFamily": "ESP32", "parts": [ { "path": "firmware/CA53Y_Comms_Display_ILI9341.bin", "offset": 0 } ] }
