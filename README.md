@@ -152,15 +152,6 @@ The full packet format is in [PROTOCOL.md](PROTOCOL.md) if you want to build you
 | Speaker | DAC 26, amp enable 4 (low = on) |
 | BOOT button | 0 |
 
-## Publishing the web flasher
-
-The `docs/` folder is a ready-made flasher page. In the GitHub repo: Settings > Pages > Source
-**Deploy from a branch**, branch `main`, folder **/docs**. The page will be at
-`https://<your-user>.github.io/<repo>/`.
-
-When you change the firmware, rebuild both versions and replace the files in `docs/firmware/`, or push a
-tag like `v1.0.1` and download the files the **Build firmware** action attaches to the release.
-
 ## License
 
 MIT. See [LICENSE](LICENSE). The CA53Y name and logo belong to CA53Y IND.
